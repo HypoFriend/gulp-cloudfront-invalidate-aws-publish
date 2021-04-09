@@ -63,12 +63,21 @@ module.exports = function (options) {
     return callback(null, file);
   };
 
+  function isHtmlFile(str) {
+    var regex = /\.html(\.br)?(\.gz)?$/;
+    var match = str.match(regex);
+
+    return match !== null;
+  }
+
   var invalidate = function(callback){
     if(files.length == 0) return callback();
 
     files = files.map(function(file) {
-      return '/' + file;
-    });
+      if(isHtmlFile(file)) {
+        return '/' + file;
+      }
+    }).filter(function(file) { return file });
 
     cloudfront.createInvalidation({
       DistributionId: options.distribution,
